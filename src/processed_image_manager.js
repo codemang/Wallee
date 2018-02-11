@@ -4,11 +4,12 @@ const fs = require('fs');
 const gm = require('gm').subClass({imageMagick: true});
 const path = require('path');
 const execSync = require('child_process').execSync;
+const MetadataFile = require('./metadata_file.js')
 
 class ProcessedImageManager {
 
   static get ASPECT_RATIO_PERCENTAGE_DIFF() { return 0.3 }
-  static get IMAGE_METADATA_FILE() { return 'metadata/image_metadata.json' }
+  static get IMAGE_METADATA_FILE() { return 'image_metadata.json' }
 
   static addImageIfGoodAspectRatio(destinationDir, localImagePath) {
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
@@ -59,15 +60,12 @@ class ProcessedImageManager {
   }
 
   static readImageRecords() {
-    if (fs.existsSync(this.IMAGE_METADATA_FILE)) {
-      return JSON.parse(fs.readFileSync(this.IMAGE_METADATA_FILE, 'utf8'));
-    }
-    return [];
+    const fileContents = MetadataFile.read(this.IMAGE_METADATA_FILE)
+    return fileContents ? JSON.parse(fileContents) : []
   }
 
   static writeImageRecords(imageRecords) {
-    execSync(`mkdir -p ${path.dirname(this.IMAGE_METADATA_FILE)}`)
-    fs.writeFileSync(this.IMAGE_METADATA_FILE, JSON.stringify(imageRecords, null, 4))
+    MetadataFile.write(this.IMAGE_METADATA_FILE, JSON.stringify(imageRecords, null, 4))
   }
 }
 
