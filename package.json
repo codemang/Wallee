@@ -1,0 +1,21 @@
+{
+  "name": "your-app",
+  "version": "0.1.0",
+  "main": "main.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "gm": "^1.23.1",
+    "image-size": "^0.6.2",
+    "request": "^2.83.0",
+    "snoowrap": "^1.15.2",
+    "uid": "0.0.2"
+  },
+  "devDependencies": {
+    "electron": "^1.8.2",
+    "electron-packager": "^11.0.0"
+  },
+  "scripts": {
+    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite",
+    "start": "electron ."
+  }
+}
