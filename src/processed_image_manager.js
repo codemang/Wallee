@@ -35,28 +35,34 @@ class ProcessedImageManager {
       .gravity('Center')
       .crop(width, height)
       .write(outputPath, function (err) { });
-      ProcessedImageManager.addImageRecord(path.basename(outputPath))
+      this.addImageRecord(path.basename(outputPath))
     }
   }
 
   static addImageRecord(imageName) {
-    let imageRecords = ProcessedImageManager.readImageRecords();
-    imageRecords.push({
-      imageName: imageName,
-      timestamp: new Date(),
-    })
-    ProcessedImageManager.writeImageRecords(imageRecords)
+    if (this.findImageRecord(imageName) == -1) {
+      let imageRecords = this.readImageRecords();
+      imageRecords.push({
+        imageName: imageName,
+        timestamp: new Date(),
+      })
+      this.writeImageRecords(imageRecords)
+    }
   }
 
   static removeImageRecord(imageName) {
-    let imageRecords = ProcessedImageManager.readImageRecords();
-    const indexToRemove = imageRecords.findIndex(element => {
+    const indexToRemove = this.findImageRecord(imageName);
+    if (indexToRemove >= 0) {
+      let imageRecords = this.readImageRecords();
+      imageRecords.shift(indexToRemove, 1)
+      this.writeImageRecords(imageRecords)
+    }
+  }
+
+  static findImageRecord(imageName) {
+    return this.readImageRecords().findIndex(element => {
       return element.imageName == imageName;
     });
-    if (indexToRemove >= 0) {
-      imageRecords.shift(indexToRemove, 1)
-      ProcessedImageManager.writeImageRecords(imageRecords)
-    }
   }
 
   static readImageRecords() {
