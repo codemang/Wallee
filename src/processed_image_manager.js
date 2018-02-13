@@ -12,33 +12,39 @@ class ProcessedImageManager {
   static get IMAGE_METADATA_FILE() { return 'image_metadata.json' }
 
   static addImageIfGoodAspectRatio(localImagePath) {
-    execSync(`mkdir -p ${this.PROCESSED_IMAGE_DIR}`)
+    return new Promise((resolve, reject) => {
+      execSync(`mkdir -p ${this.PROCESSED_IMAGE_DIR}`)
 
-    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-    const screenAspectRatio = width / (1.0 * height);
-    let dimensions;
+      const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+      const screenAspectRatio = width / (1.0 * height);
+      let dimensions;
 
-    try {
-      dimensions = imageSizer(localImagePath);
-    }
-    catch (ex) {
-      console.log(`Cannot calculate size for image ${localImagePath}`)
-      return
-    }
+      try {
+        dimensions = imageSizer(localImagePath);
+      }
+      catch (ex) {
+        console.log(`Cannot calculate size for image ${localImagePath}`)
+        resolve();
+      }
 
-    const imageAspectRatio = dimensions.width / (1.0 * dimensions.height);
+      const imageAspectRatio = dimensions.width / (1.0 * dimensions.height);
 
-    // If the image is near enough to the native screens aspect ratio, resize
-    // it. Otherwise remove it.
-    if (Math.abs((imageAspectRatio - screenAspectRatio) / screenAspectRatio) < this.ASPECT_RATIO_PERCENTAGE_DIFF) {
-      const outputPath = path.join(this.PROCESSED_IMAGE_DIR, path.basename(localImagePath))
-      gm(localImagePath)
-      .resize(width, height, '^')
-      .gravity('Center')
-      .crop(width, height)
-      .write(outputPath, function (err) { });
-      this.addImageRecord(path.basename(outputPath))
-    }
+      // If the image is near enough to the native screens aspect ratio, resize
+      // it. Otherwise remove it.
+      if (Math.abs((imageAspectRatio - screenAspectRatio) / screenAspectRatio) < this.ASPECT_RATIO_PERCENTAGE_DIFF) {
+        const outputPath = path.join(this.PROCESSED_IMAGE_DIR, path.basename(localImagePath))
+        gm(localImagePath)
+        .resize(width, height, '^')
+        .gravity('Center')
+        .crop(width, height)
+        .write(outputPath, function (err) {
+          ProcessedImageManager.addImageRecord(path.basename(outputPath))
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
   static addImageRecord(imageName) {
@@ -50,6 +56,11 @@ class ProcessedImageManager {
       })
       this.writeImageRecords(imageRecords)
     }
+  }
+
+  static removeImage(imageName) {
+    execSync(`rm ${path.join(this.PROCESSED_IMAGE_DIR, imageName)}`)
+    this.removeImageRecord(imageName)
   }
 
   static removeImageRecord(imageName) {

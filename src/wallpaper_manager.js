@@ -5,6 +5,7 @@ const path = require('path');
 const RedditImageUrlFetcher = require('./reddit_image_url_fetcher.js')
 const RemoteImageSyncer = require('./remote_image_syncer.js');
 const ProcessedImageManager = require('./processed_image_manager.js');
+const ImageCleaner = require('./image_cleaner.js')
 
 class WallpaperManager {
   static run() {
@@ -12,10 +13,13 @@ class WallpaperManager {
       hrefs.forEach(href => {
         RemoteImageSyncer.addImage(href, 'RedditEarthPorn')
       });
-      RemoteImageSyncer.localImagePaths().forEach(localImagePath => {
-        ProcessedImageManager.addImageIfGoodAspectRatio(localImagePath);
+      const addImagePromises = RemoteImageSyncer.localImagePaths().map(localImagePath => {
+        return ProcessedImageManager.addImageIfGoodAspectRatio(localImagePath);
       })
-      RemoteImageSyncer.cleanUp();
+      Promise.all(addImagePromises).then((values) => {
+        RemoteImageSyncer.cleanUp();
+        ImageCleaner.pruneOldImages();
+      })
     })
   }
 }
