@@ -19,6 +19,7 @@ class WallpaperManager {
       Promise.all(addImagePromises).then((values) => {
         RemoteImageSyncer.cleanUp();
         ImageCleaner.pruneOldImages();
+        setTimeout(WallpaperManager.run, 1000 * 60 * 60) // 1 hour
       })
     })
   }

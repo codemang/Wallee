@@ -14,7 +14,6 @@ class ImageCleaner {
     // will be the first to be saved locally.
     while (imageRecords.length > this.DESIRED_NUM_IMAGES) {
       const imageRecord = imageRecords.pop();
-      console.log(imageRecord)
       ProcessedImageManager.removeImage(imageRecord.imageName)
     }
   }
