@@ -1,8 +1,10 @@
 const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, label, printf } = format;
-const execSync = require('child_process').execSync;
+const path = require('path');
 
-execSync('mkdir -p log')
+const GeneralHelpers = require('./general_helpers.js')
+
+GeneralHelpers.mkdirp('log')
 
 const myFormat = printf(info => {
   return `${new Date()} ${info.level}: ${info.message}`;
@@ -16,8 +18,8 @@ const logger = createLogger({
     // - Write to all logs with level `info` and below to `combined.log`
     // - Write all logs error (and below) to `error.log`.
     //
-    new transports.File({ filename: 'log/error.log', level: 'error' }),
-    new transports.File({ filename: 'log/combined.log' })
+    new transports.File({ filename: GeneralHelpers.localJoin('log/error.log'), level: 'error' }),
+    new transports.File({ filename: GeneralHelpers.localJoin('log/combined.log') })
   ]
 });
 

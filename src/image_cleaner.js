@@ -1,5 +1,3 @@
-const execSync = require('child_process').execSync;
-
 const ProcessedImageManager = require('./processed_image_manager.js')
 
 class ImageCleaner {

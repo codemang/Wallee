@@ -2,24 +2,26 @@ const execSync = require('child_process').execSync;
 const path = require('path');
 const fs = require('fs');
 
+const GeneralHelpers = require('./general_helpers.js')
+
 class RemoteImageSyncer {
   static get RAW_IMAGE_DIR() { return 'raw_images'; }
 
   static addImage(imageUrl, source) {
-    execSync(`mkdir -p ${this.RAW_IMAGE_DIR}`)
+    GeneralHelpers.mkdirp(this.RAW_IMAGE_DIR)
     let remoteImageName = path.basename(imageUrl)
     let localImageName = `${source}-${remoteImageName}`
-    execSync(`curl -s ${imageUrl} > ${path.join(this.RAW_IMAGE_DIR, localImageName)}`);
+    execSync(`curl -s ${imageUrl} > ${GeneralHelpers.localJoin(this.RAW_IMAGE_DIR, localImageName)}`);
   }
 
   static localImagePaths() {
-    return fs.readdirSync(this.RAW_IMAGE_DIR).map(filename => {
-      return path.join(this.RAW_IMAGE_DIR, filename)
+    return fs.readdirSync(path.join(GeneralHelpers.projectDir, this.RAW_IMAGE_DIR)).map(filename => {
+      return path.join(GeneralHelpers.projectDir, this.RAW_IMAGE_DIR, filename)
     });
   }
 
   static cleanUp() {
-    execSync(`rm -rf ${this.RAW_IMAGE_DIR}`)
+    execSync(`rm -rf ${path.join(GeneralHelpers.projectDir, this.RAW_IMAGE_DIR)}`)
   }
 }
 

@@ -6,6 +6,7 @@
     "cheerio": "^1.0.0-rc.2",
     "gm": "^1.23.1",
     "image-size": "^0.6.2",
+    "jimp": "^0.2.28",
     "request": "^2.83.0",
     "snoowrap": "^1.15.2",
     "uid": "0.0.2",
@@ -16,7 +17,8 @@
     "electron-packager": "^11.0.0"
   },
   "scripts": {
-    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite",
-    "start": "electron ."
+    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite --out=packages --ignore=.gitignore",
+    "start": "electron .",
+    "clean": "rm -rf metadata processed_images raw_images log"
   }
 }
