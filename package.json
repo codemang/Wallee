@@ -17,7 +17,7 @@
     "electron-packager": "^11.0.0"
   },
   "scripts": {
-    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite --out=packages --ignore=.gitignore",
+    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite --out=packages --ignore=\\.gitignore",
     "start": "electron .",
     "clean": "rm -rf metadata processed_images raw_images log"
   }

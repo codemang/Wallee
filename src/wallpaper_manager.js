@@ -29,7 +29,7 @@ class WallpaperManager {
         ProcessedImageManager.readImageRecords().forEach(record => {
           logger.info(JSON.stringify(record))
         })
-        setTimeout(WallpaperManager.run, 1000 * 30) // 1 hour
+        setTimeout(WallpaperManager.run, 1000 * 60 * 60) // 1 hour
       })
     })
   }

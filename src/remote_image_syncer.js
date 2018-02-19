@@ -8,7 +8,7 @@ class RemoteImageSyncer {
   static get RAW_IMAGE_DIR() { return 'raw_images'; }
 
   static addImage(imageUrl, source) {
-    GeneralHelpers.mkdirp(this.RAW_IMAGE_DIR)
+    GeneralHelpers.localMkdirp(this.RAW_IMAGE_DIR)
     let remoteImageName = path.basename(imageUrl)
     let localImageName = `${source}-${remoteImageName}`
     execSync(`curl -s ${imageUrl} > ${GeneralHelpers.localJoin(this.RAW_IMAGE_DIR, localImageName)}`);

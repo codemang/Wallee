@@ -13,7 +13,7 @@ class MetadataFile {
   }
 
   static write(filename, content) {
-    GeneralHelpers.mkdirp(this.METADATA_DIR)
+    GeneralHelpers.localMkdirp(this.METADATA_DIR)
     const filepath = GeneralHelpers.localJoin(this.METADATA_DIR, filename);
     fs.writeFileSync(filepath, content);
   }

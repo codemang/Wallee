@@ -4,7 +4,7 @@ const path = require('path');
 
 const GeneralHelpers = require('./general_helpers.js')
 
-GeneralHelpers.mkdirp('log')
+GeneralHelpers.localMkdirp('log')
 
 const myFormat = printf(info => {
   return `${new Date()} ${info.level}: ${info.message}`;
