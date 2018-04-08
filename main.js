@@ -7,6 +7,21 @@ const WallpaperManager = require('./src/wallpaper_manager.js')
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+
+const AutoLaunch = require('auto-launch');
+
+const appAutoLauncher = new AutoLaunch({
+	name: 'Walllpaper',
+});
+
+appAutoLauncher.isEnabled().then(function(isEnabled){
+	if (isEnabled) {
+	    return;
+	}
+	appAutoLauncher.enable();
+})
+.catch(function(err){});
+
 function runApp () {
   WallpaperManager.run();
 }
@@ -32,17 +47,3 @@ app.on('activate', () => {
     runApp()
   }
 })
-
-const AutoLaunch = require('auto-launch');
-
-const appAutoLauncher = new AutoLaunch({
-	name: 'Walllpaper',
-});
-
-appAutoLauncher.isEnabled().then(function(isEnabled){
-	if (isEnabled) {
-	    return;
-	}
-	appAutoLauncher.enable();
-})
-.catch(function(err){});

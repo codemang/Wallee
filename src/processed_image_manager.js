@@ -88,12 +88,11 @@ class ProcessedImageManager {
   }
 
   static readImageRecords() {
-    const fileContents = MetadataFile.read(this.IMAGE_METADATA_FILE)
-    return fileContents ? JSON.parse(fileContents) : []
+    return MetadataFile.read(this.IMAGE_METADATA_FILE, [])
   }
 
   static writeImageRecords(imageRecords) {
-    MetadataFile.write(this.IMAGE_METADATA_FILE, JSON.stringify(imageRecords, null, 4))
+    MetadataFile.write(this.IMAGE_METADATA_FILE, imageRecords)
   }
 }
 
