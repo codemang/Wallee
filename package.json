@@ -19,6 +19,7 @@
   },
   "scripts": {
     "package": "electron-packager . WallpaperApp --platform=darwin --overwrite --out=packages --ignore=\\.gitignore --icon=/Users/codemang/Personal/wallpaper_app/assets/lamp.icns",
+    "dmg": "electron-installer-dmg packages/WallpaperApp-darwin-x64/WallpaperApp.app WallpaperApp --icon=/Users/codemang/Personal/wallpaper_app/assets/lamp.icns --overwrite",
     "start": "electron .",
     "clean": "rm -rf metadata processed_images raw_images log"
   }
