@@ -18,7 +18,7 @@
     "electron-packager": "^11.0.0"
   },
   "scripts": {
-    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite --out=packages --ignore=\\.gitignore",
+    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite --out=packages --ignore=\\.gitignore --icon=/Users/codemang/Personal/wallpaper_app/assets/lamp.icns",
     "start": "electron .",
     "clean": "rm -rf metadata processed_images raw_images log"
   }
