@@ -4,6 +4,7 @@ const jimp = require("jimp");
 const logger = require('./logger.js')
 const path = require('path');
 const execSync = require('child_process').execSync;
+const fs = require('fs');
 
 const MetadataFile = require('./metadata_file.js')
 const GeneralHelpers = require('./general_helpers.js')
@@ -68,7 +69,12 @@ class ProcessedImageManager {
   }
 
   static removeImage(imageName) {
-    execSync(`rm ${path.join(this.FULL_PROCESSED_IMAGE_DIR, imageName)}`)
+    const imagePath = path.join(this.FULL_PROCESSED_IMAGE_DIR, imageName)
+    if (fs.existsSync(imagePath)) {
+      execSync(`rm ${imagePath}`)
+    } else {
+      logger.info(`Trying to remove image but not found on filesystem: ${imagePath}`)
+    }
     this.removeImageRecord(imageName)
   }
 
