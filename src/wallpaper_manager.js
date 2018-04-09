@@ -7,7 +7,6 @@ const logger = require('./logger.js')
 const RedditImageUrlFetcher = require('./reddit_image_url_fetcher.js')
 const RemoteImageSyncer = require('./remote_image_syncer.js');
 const ProcessedImageManager = require('./processed_image_manager.js');
-const ImageCleaner = require('./image_cleaner.js')
 const GeneralHelpers = require('./general_helpers.js')
 const MetadataFile = require('./metadata_file.js')
 
@@ -43,7 +42,7 @@ class WallpaperManager {
 
       Promise.all(addImagePromises).then((values) => {
         RemoteImageSyncer.cleanUp();
-        ImageCleaner.pruneOldImages();
+        ProcessedImageManager.pruneOldImages();
         logger.info("-- Current Images --")
         ProcessedImageManager.readImageRecords().forEach(record => {
           logger.info(JSON.stringify(record))

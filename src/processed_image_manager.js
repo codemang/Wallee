@@ -10,6 +10,7 @@ const MetadataFile = require('./metadata_file.js')
 const GeneralHelpers = require('./general_helpers.js')
 
 class ProcessedImageManager {
+  static get DESIRED_NUM_IMAGES() { return 10; }
   static get PROCESSED_IMAGE_DIR() { return 'Wallpaper-Images'; }
 
   static get FULL_PROCESSED_IMAGE_DIR() {
@@ -99,6 +100,19 @@ class ProcessedImageManager {
 
   static writeImageRecords(imageRecords) {
     MetadataFile.write(this.IMAGE_METADATA_FILE, imageRecords)
+  }
+
+  static pruneOldImages() {
+    const imageRecords = this.readImageRecords().sort((imageRecord1, imageRecord2) => {
+      return imageRecord1.timestamp > imageRecord2.timestamp ? -1 : 1
+    });
+
+    // TODO: this will likely remove the most popular images first, since they
+    // will be the first to be saved locally.
+    while (imageRecords.length > this.DESIRED_NUM_IMAGES) {
+      const imageRecord = imageRecords.pop();
+      this.removeImage(imageRecord.imageName)
+    }
   }
 }
 
