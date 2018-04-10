@@ -42,7 +42,7 @@ class ProcessedImageManager {
       // If the image is near enough to the native screens aspect ratio, resize
       // it. Otherwise remove it.
       if (Math.abs((imageAspectRatio - screenAspectRatio) / screenAspectRatio) < this.ASPECT_RATIO_PERCENTAGE_DIFF) {
-        const outputPath = path.join(this.FULL_PROCESSED_IMAGE_DIR, path.basename(localImagePath))
+        const outputPath = this.localImagePath(path.basename(localImagePath))
         jimp.read(localImagePath).then(function (image) {
           image.cover(width, height);
           image.write(outputPath, () => {
@@ -70,7 +70,7 @@ class ProcessedImageManager {
   }
 
   static removeImage(imageName) {
-    const imagePath = path.join(this.FULL_PROCESSED_IMAGE_DIR, imageName)
+    const imagePath = this.localImagePath(imageName)
     if (fs.existsSync(imagePath)) {
       execSync(`rm ${imagePath}`)
     } else {
@@ -83,7 +83,7 @@ class ProcessedImageManager {
     const indexToRemove = this.findImageRecord(imageName);
     if (indexToRemove >= 0) {
       let imageRecords = this.readImageRecords();
-      imageRecords.shift(indexToRemove, 1)
+      imageRecords.splice(indexToRemove, 1)
       this.writeImageRecords(imageRecords)
     }
   }
@@ -109,10 +109,39 @@ class ProcessedImageManager {
 
     // TODO: this will likely remove the most popular images first, since they
     // will be the first to be saved locally.
+    //
+    // Ensure there are only 10 images.
     while (imageRecords.length > this.DESIRED_NUM_IMAGES) {
       const imageRecord = imageRecords.pop();
       this.removeImage(imageRecord.imageName)
     }
+
+    // Remove image files that have no corresponding record
+    fs.readdirSync(this.FULL_PROCESSED_IMAGE_DIR).forEach(localImageFile => {
+      const recordForLocalImage = imageRecords.find(imageRecord => {
+        return imageRecord.imageName === localImageFile
+      })
+      if (!recordForLocalImage) {
+        logger.warn(`Could not find image record for local image: ${localImageFile}`)
+        this.removeImage(localImageFile)
+      }
+    });
+
+    // Remove image records that have no corresponding file
+    imageRecords.forEach(imageRecord => {
+      if (!this.localImageFileExists(imageRecord.imageName)) {
+        logger.warn(`Could not find image file for image record: ${imageRecord.imageName}`)
+        this.removeImageRecord(imageRecord.imageName)
+      }
+    });
+  }
+
+  static localImagePath(imageName) {
+    return path.join(this.FULL_PROCESSED_IMAGE_DIR, imageName);
+  }
+
+  static localImageFileExists(imageName) {
+    return fs.existsSync(this.localImagePath(imageName));
   }
 }
 
