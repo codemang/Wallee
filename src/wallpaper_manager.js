@@ -33,7 +33,7 @@ class WallpaperManager {
 
     RedditImageUrlFetcher.fetch().then(hrefs => {
       hrefs.forEach(href => {
-        RemoteImageSyncer.addImage(href, 'RedditEarthPorn')
+        RemoteImageSyncer.addImage(href, 'I-Took-A-Picture')
       });
 
       const addImagePromises = RemoteImageSyncer.localImagePaths().map(localImagePath => {
