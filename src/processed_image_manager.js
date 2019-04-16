@@ -11,7 +11,7 @@ const GeneralHelpers = require('./general_helpers.js')
 
 class ProcessedImageManager {
   static get DESIRED_NUM_IMAGES() { return 10; }
-  static get PROCESSED_IMAGE_DIR() { return 'Wallpaper-Images'; }
+  static get PROCESSED_IMAGE_DIR() { return 'Wallee-Images'; }
 
   static get FULL_PROCESSED_IMAGE_DIR() {
     const homeDir = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE; // Works on all OS's

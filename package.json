@@ -15,13 +15,17 @@
   },
   "devDependencies": {
     "electron": "^1.8.2",
-    "electron-packager": "^11.0.0"
+    "electron-installer-dmg": "^2.0.0",
+    "electron-packager": "^12.1.0"
   },
   "scripts": {
     "start": "electron .",
-    "clean": "rm -rf metadata processed_images raw_images log",
-    "package": "electron-packager . WallpaperApp --platform=darwin --overwrite --out=packages --ignore=\\.gitignore --icon=/Users/codemang/Personal/wallpaper_app/assets/lamp.icns",
-    "dmg": "electron-installer-dmg packages/WallpaperApp-darwin-x64/WallpaperApp.app WallpaperApp --icon=/Users/codemang/Personal/wallpaper_app/assets/lamp.icns --overwrite",
+    "clean": "rm -rf metadata processed_images raw_images log packages ~/Desktop/Wallee-Images *.dmg",
+    "package": "electron-packager . Wallee --platform=darwin --overwrite --out=packages --ignore=\\.gitignore --icon=/Users/codemang/Personal/Wallee/assets/lamp.icns",
+    "package-mac": "electron-packager . Wallee --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.png.icns --prune=true --out=packages",
+    "package-win": "electron-packager . Wallee --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=packages --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Electron Tutorial App\"",
+    "package-linux": "electron-packager . Wallee --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=packages",
+    "dmg": "electron-installer-dmg packages/Wallee-darwin-x64/Wallee.app Wallee --overwrite --icon=assets/icons/mac/icon.png.icns",
     "release_osx": "npm run clean && npm run package && npm run dmg"
   }
 }
