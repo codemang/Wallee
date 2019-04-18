@@ -10,18 +10,10 @@ class RemoteImageSyncer {
   static addImage(imageUrl, source) {
     GeneralHelpers.localMkdirp(this.RAW_IMAGE_DIR)
     let remoteImageName = path.basename(imageUrl)
-    let localImageName = `${source}-${remoteImageName}`
-    execSync(`curl -s ${imageUrl} > ${GeneralHelpers.localJoin(this.RAW_IMAGE_DIR, localImageName)}`);
-  }
-
-  static localImagePaths() {
-    return fs.readdirSync(path.join(GeneralHelpers.projectDir, this.RAW_IMAGE_DIR)).map(filename => {
-      return path.join(GeneralHelpers.projectDir, this.RAW_IMAGE_DIR, filename)
-    });
-  }
-
-  static cleanUp() {
-    execSync(`rm -rf ${path.join(GeneralHelpers.projectDir, this.RAW_IMAGE_DIR)}`)
+    let localImageName = `${source}::${remoteImageName}`
+    const localImagePath = GeneralHelpers.localJoin(this.RAW_IMAGE_DIR, localImageName);
+    execSync(`curl -s ${imageUrl} > ${localImagePath}`);
+    return localImagePath;
   }
 }
 

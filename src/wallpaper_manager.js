@@ -20,7 +20,7 @@ class WallpaperManager {
     setInterval(WallpaperManager.refreshImages, WallpaperManager.EXECUTION_REPEAT_SECONDS * 1000)
   }
 
-  static refreshImages(){
+  static refreshImages() {
     logger.info("Starting main loop")
 
     const executionMetadata = MetadataFile.read(WallpaperManager.EXECUTION_METADATA, {})
@@ -31,25 +31,79 @@ class WallpaperManager {
 
     logger.info(`Last execution time is too old. Proceeding.`)
 
-    RedditImageUrlFetcher.fetch().then(hrefs => {
-      hrefs.forEach(href => {
-        RemoteImageSyncer.addImage(href, 'I-Took-A-Picture')
+    const hrefPromises = WallpaperManager.imageSources().map(imageSource => {
+      return new Promise(function(resolve, reject) {
+        RedditImageUrlFetcher.fetch(imageSource.endpoint).then(hrefs => {
+          imageSource.hrefs = hrefs;
+          resolve(imageSource);
+        });
+      });
+    })
+
+    Promise.all(hrefPromises).then(imageSources => {
+      const promises = imageSources.map(imageSource => {
+        return new Promise(function(resolve, reject) {
+          WallpaperManager.iterativelyDownloadImages(imageSource.hrefs, imageSources.length, function(url, processNextPath) {
+            const localImagePath = RemoteImageSyncer.addImage(url, imageSource.internalName);
+            ProcessedImageManager.addImageIfGoodAspectRatio(localImagePath).then((successfulImageProcessing) => {
+              if (successfulImageProcessing) {
+                logger.info(`Added image for source: ${imageSource.displayName}, url: ${url}`);
+              }
+              processNextPath(successfulImageProcessing);
+            });
+          }, function() { resolve(); });
+        });
       });
 
-      const addImagePromises = RemoteImageSyncer.localImagePaths().map(localImagePath => {
-        return ProcessedImageManager.addImageIfGoodAspectRatio(localImagePath);
-      })
-
-      Promise.all(addImagePromises).then((values) => {
-        RemoteImageSyncer.cleanUp();
-        ProcessedImageManager.pruneOldImages();
-        logger.info("-- Current Images --")
-        ProcessedImageManager.readImageRecords().forEach(record => {
-          logger.info(JSON.stringify(record))
-        })
+      Promise.all(promises).then(() => {
+        ProcessedImageManager.moveProcessedImagesToFinalDir();
         MetadataFile.write(WallpaperManager.EXECUTION_METADATA, {timestamp: new Date()})
-      })
+        logger.info("Successfully moved over final images");
+      });
     });
+  }
+
+  static iterativelyDownloadImages(urls, numImageSources, processPath, callback) {
+    var nextItemIndex = 0;  //keep track of the index of the next item to be processed
+    var success = 0;
+
+    function processNextPath(successfulImageProcessing) {
+      nextItemIndex++;
+      if (successfulImageProcessing) {
+        success += 1;
+      }
+      if(success === WallpaperManager.numImagesPerImageSource()[numImageSources] || nextItemIndex >= urls.length)
+        callback();
+      else
+        processPath(urls[nextItemIndex], processNextPath);
+    }
+
+    processPath(urls[0], processNextPath);
+  }
+
+  static imageSources() {
+    return [
+      {
+        displayName: 'Earth Porn (reddit)',
+        internalName: 'earth_porn_reddit',
+        endpoint: 'https://www.reddit.com/r/EarthPorn.json'
+      },
+      {
+        displayName: 'I Took A Picture (reddit)',
+        internalName: 'i_took_a_picture_reddit',
+        endpoint: 'https://www.reddit.com/r/itookapicture.json'
+      },
+    ];
+  }
+
+  static numImagesPerImageSource() {
+    return {
+      1: 10,
+      2: 5,
+      3: 4,
+      4: 3,
+      5: 2,
+    };
   }
 }
 
