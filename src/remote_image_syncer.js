@@ -1,4 +1,4 @@
-const execSync = require('child_process').execSync;
+const exec = require('child_process').exec;
 const path = require('path');
 const fs = require('fs');
 
@@ -12,8 +12,13 @@ class RemoteImageSyncer {
     let remoteImageName = path.basename(imageUrl)
     let localImageName = `${source}::${remoteImageName}`
     const localImagePath = GeneralHelpers.localJoin(this.RAW_IMAGE_DIR, localImageName);
-    execSync(`curl -s ${imageUrl} > ${localImagePath}`);
-    return localImagePath;
+    return new Promise(function(resolve, reject) {
+      const cmd = `curl -s ${imageUrl} > ${localImagePath}`;
+      const callback = (error, stdout, stderr) => {
+        resolve(localImagePath);
+      };
+      exec(cmd, callback);
+    });
   }
 }
 

@@ -15,12 +15,14 @@ class WallpaperManager {
   static get EXECUTION_STALE_SECONDS() { return 60 * 60; } // 1 hour
   static get EXECUTION_REPEAT_SECONDS() { return 5 * 60; } // 5 minuts
 
-  static run() {
-    this.refreshImages();
-    setInterval(WallpaperManager.refreshImages, WallpaperManager.EXECUTION_REPEAT_SECONDS * 1000)
+  static run(options = {}) {
+    this.refreshImages(options);
+    setInterval(() => {
+      WallpaperManager.refreshImages(options);
+    }, WallpaperManager.EXECUTION_REPEAT_SECONDS * 1000)
   }
 
-  static refreshImages() {
+  static refreshImages(options) {
     logger.info("Starting main loop")
 
     const executionMetadata = MetadataFile.read(WallpaperManager.EXECUTION_METADATA, {})
@@ -41,15 +43,17 @@ class WallpaperManager {
     })
 
     Promise.all(hrefPromises).then(imageSources => {
+      logger.info("Got all hrefs");
       const promises = imageSources.map(imageSource => {
         return new Promise(function(resolve, reject) {
           WallpaperManager.iterativelyDownloadImages(imageSource.hrefs, imageSources.length, function(url, processNextPath) {
-            const localImagePath = RemoteImageSyncer.addImage(url, imageSource.internalName);
-            ProcessedImageManager.addImageIfGoodAspectRatio(localImagePath).then((successfulImageProcessing) => {
-              if (successfulImageProcessing) {
-                logger.info(`Added image for source: ${imageSource.displayName}, url: ${url}`);
-              }
-              processNextPath(successfulImageProcessing);
+            RemoteImageSyncer.addImage(url, imageSource.internalName).then(localImagePath => {
+              ProcessedImageManager.addImageIfGoodAspectRatio(options.width, options.height, localImagePath).then((successfulImageProcessing) => {
+                if (successfulImageProcessing) {
+                  logger.info(`Added image for source: ${imageSource.displayName}, url: ${url}`);
+                }
+                processNextPath(successfulImageProcessing);
+              });
             });
           }, function() { resolve(); });
         });

@@ -19,28 +19,31 @@ class ProcessedImageManager {
   static get ASPECT_RATIO_PERCENTAGE_DIFF() { return 0.3 }
   static get IMAGE_METADATA_FILE() { return 'image_metadata.json' }
 
-  static addImageIfGoodAspectRatio(localImagePath) {
-    return new Promise((resolve, reject) => {
+  static addImageIfGoodAspectRatio(width, height, localImagePath) {
+    return new Promise(async (resolve, reject) => {
       GeneralHelpers.localMkdirp(this.TEMP_IMAGE_DIR)
 
-      const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
       const screenAspectRatio = width / (1.0 * height);
       let dimensions;
 
       try {
         dimensions = imageSizer(localImagePath);
-      }
-      catch (ex) {
+      } catch (ex) {
         // Cannot calculate size for image ${localImagePath}
         resolve(false);
+        return;
       }
 
+      if (!dimensions) {
+        resolve(false);
+        return;
+      }
       const imageAspectRatio = dimensions.width / (1.0 * dimensions.height);
 
       // If the image is near enough to the native screens aspect ratio, resize
       // it. Otherwise remove it.
       if (Math.abs((imageAspectRatio - screenAspectRatio) / screenAspectRatio) < this.ASPECT_RATIO_PERCENTAGE_DIFF) {
-        const outputPath = this.processedImagePath(path.basename(localImagePath))
+        const outputPath = this.processedImagePath(path.basename(localImagePath));
         jimp.read(localImagePath).then(function (image) {
           image.cover(width, height);
           image.write(outputPath, () => {
@@ -48,9 +51,11 @@ class ProcessedImageManager {
           })
         }).catch(function (err) {
           logger.info(err)
+          resolve(false);
         });
       } else {
         resolve(false);
+        return;
       }
     });
   }
