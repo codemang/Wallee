@@ -6,30 +6,26 @@ const path = require('path');
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 
+const UserStore = require('./user_store.js')
 const MetadataFile = require('./metadata_file.js')
 const GeneralHelpers = require('./general_helpers.js')
 
 class ProcessedImageManager {
   static get PROCESSED_IMAGE_DIR() { return 'Wallee-Images'; }
   static get TEMP_IMAGE_DIR() { return 'processed_images'; }
-
-  static get FULL_PROCESSED_IMAGE_DIR() {
-  }
-
   static get ASPECT_RATIO_PERCENTAGE_DIFF() { return 0.3 }
-  static get IMAGE_METADATA_FILE() { return 'image_metadata.json' }
 
-  static addImageIfGoodAspectRatio(width, height, localImagePath) {
+  static addImageIfGoodAspectRatio(localImagePath) {
     return new Promise(async (resolve, reject) => {
       GeneralHelpers.localMkdirp(this.TEMP_IMAGE_DIR)
 
-      const screenAspectRatio = width / (1.0 * height);
+      const screenAspectRatio = UserStore.screenWidth() / (1.0 * UserStore.screenHeight());
       let dimensions;
 
       try {
         dimensions = imageSizer(localImagePath);
       } catch (ex) {
-        // Cannot calculate size for image ${localImagePath}
+        // Cannot calculate size for image
         resolve(false);
         return;
       }
@@ -38,6 +34,7 @@ class ProcessedImageManager {
         resolve(false);
         return;
       }
+
       const imageAspectRatio = dimensions.width / (1.0 * dimensions.height);
 
       // If the image is near enough to the native screens aspect ratio, resize
@@ -45,7 +42,7 @@ class ProcessedImageManager {
       if (Math.abs((imageAspectRatio - screenAspectRatio) / screenAspectRatio) < this.ASPECT_RATIO_PERCENTAGE_DIFF) {
         const outputPath = this.processedImagePath(path.basename(localImagePath));
         jimp.read(localImagePath).then(function (image) {
-          image.cover(width, height);
+          image.cover(UserStore.screenWidth(), UserStore.screenHeight());
           image.write(outputPath, () => {
             resolve(true);
           })

@@ -5,3 +5,35 @@ metadata
 packages
 log
 *.dmg
+
+
+# React frontend
+# Cruft
+frontend/*~
+frontend/*#
+frontend/.#*
+frontend/.DS_Store
+
+# Test
+frontend/coverage
+frontend/.eslintcache
+
+# Logs
+frontend/*.log
+
+# npm & yarn
+frontend/node_modules/
+frontend/.npm
+frontend/.yarn-integrity
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/yarn.lock*
+frontend/package-lock.json
+frontend//build/bundle.js
+frontend//build/index.html
+frontend//build*
+frontend//build/*
+frontend/# Editor/IDE
+frontend/.idea
+frontend/packages/api/etc/

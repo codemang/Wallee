@@ -2,7 +2,11 @@ const {app, BrowserWindow, ipcMain, Tray, nativeImage, dialog} = require('electr
 const path = require('path')
 const logger = require('./src/logger.js')
 const WallpaperManager = require('./src/wallpaper_manager.js')
+const UserStore = require('./src/user_store.js')
 const AutoLaunch = require('auto-launch');
+const fs = require('fs');
+const initialImageSources= require('./initial_image_sources');
+const _ = require('lodash');
 
 // Initialize app to launch on startup
 const appAutoLauncher = new AutoLaunch({
@@ -21,21 +25,37 @@ dialog.showErrorBox = (title, content) => {
   logger.info(`${title}\n${content}`);
 };
 
+
 let tray = undefined
 let window = undefined
 
 app.on('ready', () => {
+  initUserStore();
   startBackgroundJob();
   createMenuTray();
 })
 
+const initUserStore = () => {
+  if (!UserStore.isInitialized()) {
+    const electron = require('electron');
+    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+    UserStore.writeScreenSize(width, height);
+    UserStore.writeImagePreferences(initialImageSources);
+  }
+};
+
 // Function to start background job that fetches images
+let backgroundTab;
 const startBackgroundJob = () => {
-  let backgroundTab = new BrowserWindow({ show: false });
+  backgroundTab = new BrowserWindow({ show: false });
   backgroundTab.on('closed', () => {
       win = null
   })
   backgroundTab.loadURL(`file://${path.join(__dirname, 'background_tab.html')}`)
+
+  backgroundTab.webContents.on('did-finish-load', () => {
+    syncImages();
+  });
 };
 
 // Helper functions for creating menu tray
@@ -56,14 +76,15 @@ const createMenuTray = () => {
 
   // Make the popup window for the menubar
   window = new BrowserWindow({
-    width: 300,
-    height: 350,
+    width: 1000,
+    height: 550,
     show: false,
     frame: false,
     resizable: false,
   })
 
-  window.loadURL(`file://${path.join(__dirname, 'menu.html')}`)
+  // window.loadURL(`file://${path.join(__dirname, 'menu.html')}`)
+  window.loadURL(`file://${path.join(__dirname, 'frontend/build/index.html')}`)
 
   // Only close the window on blur if dev tools isn't opened
   window.on('blur', () => {
@@ -82,17 +103,18 @@ const toggleWindow = () => {
 }
 
 const showWindow = () => {
+  const electron = require('electron');
+  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
   const trayPos = tray.getBounds()
   const windowPos = window.getBounds()
-  let x, y = 0
-  if (process.platform == 'darwin') {
-    x = Math.round(trayPos.x + (trayPos.width / 2) - (windowPos.width / 2))
-    y = Math.round(trayPos.y + trayPos.height)
-  } else {
-    x = Math.round(trayPos.x + (trayPos.width / 2) - (windowPos.width / 2))
-    y = Math.round(trayPos.y + trayPos.height * 10)
-  }
+  const x = width - windowPos.width - 20;
 
+  let y =0;
+  if (process.platform == 'darwin') {
+    y = Math.round(trayPos.y + trayPos.height) + 20;
+  } else {
+    y = Math.round(trayPos.y + trayPos.height * 10) + 20;
+  }
 
   window.setPosition(x, y, false)
   window.show()
@@ -111,11 +133,25 @@ app.on('window-all-closed', () => {
   }
 })
 
-ipcMain.on('asynchronous-message', (event, arg) => {
-  const electron = require('electron');
-  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-  event.sender.send('asynchronous-reply', { width, height })
+// Helper functions for communication between main process and image fetcher
+const syncImages = (options = {}) => {
+  backgroundTab.webContents.send('sync-images', options);
+};
+
+// Helper functions for communication between main process and UI
+ipcMain.on('request-image-sources', (event, arg) => {
+  event.sender.send('reply-image-sources', UserStore.readImagePreferences().imagePreferences)
 })
+
+ipcMain.on('toggle-image-following', (event, internalName) => {
+  logger.info("Toggled image following for: " + internalName);
+  const imageSources = UserStore.readImagePreferences().imagePreferences;
+  let imageSource = _.find(imageSources, ['internalName', internalName]);
+  imageSource.isFollowing = !imageSource.isFollowing;
+  UserStore.writeImagePreferences(imageSources);
+  syncImages({forceRun: true});
+  event.sender.send('reply-image-sources', UserStore.readImagePreferences().imagePreferences)
+});
 
 // Tray Icon as Base64 so tutorial has less overhead
 let base64Icon = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw

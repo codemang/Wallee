@@ -9,31 +9,26 @@ const RemoteImageSyncer = require('./remote_image_syncer.js');
 const ProcessedImageManager = require('./processed_image_manager.js');
 const GeneralHelpers = require('./general_helpers.js')
 const MetadataFile = require('./metadata_file.js')
+const UserStore = require('./user_store.js')
 
 class WallpaperManager {
-  static get EXECUTION_METADATA() { return 'execution_metadata.json'; }
   static get EXECUTION_STALE_SECONDS() { return 60 * 60; } // 1 hour
-  static get EXECUTION_REPEAT_SECONDS() { return 5 * 60; } // 5 minuts
 
-  static run(options = {}) {
-    this.refreshImages(options);
-    setInterval(() => {
-      WallpaperManager.refreshImages(options);
-    }, WallpaperManager.EXECUTION_REPEAT_SECONDS * 1000)
-  }
-
-  static refreshImages(options) {
-    logger.info("Starting main loop")
-
-    const executionMetadata = MetadataFile.read(WallpaperManager.EXECUTION_METADATA, {})
-    if (executionMetadata.timestamp && (new Date() - new Date(executionMetadata.timestamp))/1000 < WallpaperManager.EXECUTION_STALE_SECONDS) {
-      logger.info(`Last execution time '${executionMetadata.timestamp}' is too recent. Skipping.`)
+  static refreshImages(options = {}, markJobCompleteCallback) {
+    const lastRunTimestamp = UserStore.lastRunTimestamp();
+    if (!options.forceRun && lastRunTimestamp && (new Date() - new Date(lastRunTimestamp))/1000 < WallpaperManager.EXECUTION_STALE_SECONDS) {
+      logger.info(`Last execution time '${lastRunTimestamp}' is too recent. Not refreshing images.`)
+      markJobCompleteCallback();
       return;
     }
 
-    logger.info(`Last execution time is too old. Proceeding.`)
+    if (options.forceRun) {
+      logger.info(`Called with forceRun == true. Refreshing images.`)
+    } else {
+      logger.info(`Last execution time is too old. Refreshing images.`)
+    }
 
-    const hrefPromises = WallpaperManager.imageSources().map(imageSource => {
+    const hrefPromises = UserStore.followingImagePreferences().map(imageSource => {
       return new Promise(function(resolve, reject) {
         RedditImageUrlFetcher.fetch(imageSource.endpoint).then(hrefs => {
           imageSource.hrefs = hrefs;
@@ -48,7 +43,7 @@ class WallpaperManager {
         return new Promise(function(resolve, reject) {
           WallpaperManager.iterativelyDownloadImages(imageSource.hrefs, imageSources.length, function(url, processNextPath) {
             RemoteImageSyncer.addImage(url, imageSource.internalName).then(localImagePath => {
-              ProcessedImageManager.addImageIfGoodAspectRatio(options.width, options.height, localImagePath).then((successfulImageProcessing) => {
+              ProcessedImageManager.addImageIfGoodAspectRatio(localImagePath).then((successfulImageProcessing) => {
                 if (successfulImageProcessing) {
                   logger.info(`Added image for source: ${imageSource.displayName}, url: ${url}`);
                 }
@@ -61,8 +56,9 @@ class WallpaperManager {
 
       Promise.all(promises).then(() => {
         ProcessedImageManager.moveProcessedImagesToFinalDir();
-        MetadataFile.write(WallpaperManager.EXECUTION_METADATA, {timestamp: new Date()})
+        UserStore.writeLastRunTimestamp(new Date());
         logger.info("Successfully moved over final images");
+        markJobCompleteCallback();
       });
     });
   }
@@ -83,21 +79,6 @@ class WallpaperManager {
     }
 
     processPath(urls[0], processNextPath);
-  }
-
-  static imageSources() {
-    return [
-      {
-        displayName: 'Earth Porn (reddit)',
-        internalName: 'earth_porn_reddit',
-        endpoint: 'https://www.reddit.com/r/EarthPorn.json'
-      },
-      {
-        displayName: 'I Took A Picture (reddit)',
-        internalName: 'i_took_a_picture_reddit',
-        endpoint: 'https://www.reddit.com/r/itookapicture.json'
-      },
-    ];
   }
 
   static numImagesPerImageSource() {
