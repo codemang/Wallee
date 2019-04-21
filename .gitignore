@@ -30,10 +30,11 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/yarn.lock*
 frontend/package-lock.json
-frontend//build/bundle.js
-frontend//build/index.html
-frontend//build*
-frontend//build/*
-frontend/# Editor/IDE
+frontend/build/bundle.js
+frontend/build/index.html
+frontend/build*
+frontend/build/*
+
+# Editor/IDE
 frontend/.idea
 frontend/packages/api/etc/

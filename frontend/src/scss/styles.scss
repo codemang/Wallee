@@ -1,0 +1,109 @@
+@import "~bootstrap/scss/bootstrap";
+
+p {
+  margin-bottom: 0;
+}
+.body {
+  padding-top: 20px;
+}
+.top-bar {
+  background-color: #F5F5F5;
+  border-bottom: 1px solid #E3E3E3;
+  padding: 10px;
+}
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  margin-bottom: 0;
+  right: 0;
+  left: 0;
+  height: 45px;
+  text-align: center;
+  background: #F5F5F5;
+}
+.love {
+  line-height: 45px;
+}
+.logo, .nav-item {
+  display: inline-block;
+  margin-right: 40px;
+  margin-bottom: 0;
+}
+.logo {
+  color: #2196F3;
+  font-size: 30px;
+  margin-bottom: 0;
+  margin-left: 25px;
+}
+.nav-item {
+  color: #737373
+}
+.nav-item-selected {
+  color: #161616;
+  font-weight: 700;
+}
+.overflow-container {
+  max-height: 419px;
+  overflow: scroll;
+}
+
+.image-source-button {
+  font-size: 16px;
+  display: inline-block;
+}
+.image-source-name {
+  font-weight: 600;
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+.image-source-button:hover {
+  cursor: pointer;
+}
+.image-source-active {
+  font-weight: 700;
+  color: #E91E63;
+}
+.center-content-image {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.button {
+  text-align: center;
+  border-radius: 3px;
+  padding: 3px;
+  display: inline-block;
+  padding: 5px 30px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.39);
+}
+.button:hover {
+  cursor: pointer;
+}
+.follow-button {
+  background: #E91E63;
+  color: white;
+}
+.follow-button::after {
+  content: "Follow"
+}
+.unfollow-button {
+  background: #F5F5F5;
+  color: #737373;
+}
+.unfollow-button::after {
+  content: "Unfollow"
+}
+.image-source-label {
+  font-size: 12px;
+  color: gray;
+  margin-bottom: 10px;
+}
+.image-source-list {
+  padding-bottom: 30px;
+}
+.image-source-container {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+.image-source-description {
+  margin-bottom: 10px;
+}
