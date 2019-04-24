@@ -60,8 +60,7 @@ const startBackgroundJob = () => {
 
 // Helper functions for creating menu tray
 const createMenuTray = () => {
-  let icon = nativeImage.createFromDataURL(base64Icon)
-  tray = new Tray(icon)
+  tray = new Tray(path.join(__dirname, 'assets/icons/menu/camera.png'))
 
   // Add a click handler so that when the user clicks on the menubar icon, it shows
   // our popup window
