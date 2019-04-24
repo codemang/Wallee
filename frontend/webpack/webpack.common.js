@@ -70,16 +70,32 @@ module.exports = {
         ],
       },
       {
-        test: /\.(woff2|ttf|woff|eot)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              outputPath: commonPaths.fontsFolder,
-            },
-          },
-        ],
-      },
+      test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url-loader",
+    }, {
+      test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url-loader",
+    }, {
+      test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url-loader",
+    }, {
+      test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url-loader"
+    }, {
+      test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+      loader: "url-loader",
+    }
+      // {
+      //   test: /\.(woff2|ttf|woff|eot)$/,
+      //   use: [
+      //     {
+      //       loader: 'file-loader',
+      //       options: {
+      //         outputPath: commonPaths.fontsFolder,
+      //       },
+      //     },
+      //   ],
+      // },
     ],
   },
   serve: {

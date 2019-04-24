@@ -5,7 +5,7 @@ import _ from 'lodash';
 const ImageSource = ({
   displayName,
   internalName,
-  isChecked,
+  isFollowing,
   isActive,
   clickCallback,
 }) => (
@@ -15,6 +15,7 @@ const ImageSource = ({
       onClick={clickCallback.bind(this, internalName)}
     >
       {displayName}
+      {isFollowing && <i className="fa fa-check check"></i>}
     </div>
   </div>
 );
@@ -22,7 +23,7 @@ const ImageSource = ({
 ImageSource.propTypes = {
   displayName: PropTypes.string,
   internalName: PropTypes.string,
-  isChecked: PropTypes.boolean,
+  isFollowing: PropTypes.boolean,
   isActive: PropTypes.boolean,
   clickCallback: PropTypes.func,
 };

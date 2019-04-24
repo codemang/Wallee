@@ -1,4 +1,6 @@
 @import "~bootstrap/scss/bootstrap";
+$fa-font-path: "~font-awesome/fonts";
+@import '~font-awesome/scss/font-awesome';
 
 p {
   margin-bottom: 0;
@@ -106,4 +108,8 @@ p {
 }
 .image-source-description {
   margin-bottom: 10px;
+}
+.check {
+  color: #00c853;
+  margin-left: 5px;
 }

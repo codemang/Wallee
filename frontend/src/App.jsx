@@ -4,6 +4,7 @@ import ImageSource from './components/image_source';
 import ImagePreview from './components/image_preview';
 import './scss/styles';
 
+
 // https://github.com/electron/electron/issues/9920
 const { ipcRenderer } = window.require('electron');
 
@@ -43,6 +44,7 @@ class App extends Component {
               this.state.activeImageSourceInternalName ==
               imageSource.internalName
             }
+            isFollowing={imageSource.isFollowing}
           />
         );
       }
@@ -69,6 +71,7 @@ class App extends Component {
     const selectedImageSource = this.selectedImageSource();
     return (
       <div>
+        <p class="image-source-label">OVERVIEW</p>
         <p class="image-source-name">{selectedImageSource.sourceLabel}</p>
         <p class="image-source-description">
           {selectedImageSource.description}
