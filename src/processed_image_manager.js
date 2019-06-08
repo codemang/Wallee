@@ -1,17 +1,16 @@
-const electron = require('electron')
 const imageSizer = require('image-size');
 const jimp = require("jimp");
-const logger = require('./logger.js')
 const path = require('path');
 const execSync = require('child_process').execSync;
-const fs = require('fs');
 
-const UserStore = require('./user_store.js')
-const MetadataFile = require('./metadata_file.js')
-const GeneralHelpers = require('./general_helpers.js')
+const CONSTANTS = require('./constants.js');
+const DatabaseClient = require('./database_client.js');
+const GeneralHelpers = require('./general_helpers.js');
+const Logger = require('./logger.js');
+const MetadataFile = require('./metadata_file.js');
+const FinalImageDirManager = require('./final_image_dir_manager.js');
 
 class ProcessedImageManager {
-  static get PROCESSED_IMAGE_DIR() { return 'Wallee-Images'; }
   static get TEMP_IMAGE_DIR() { return 'processed_images'; }
   static get ASPECT_RATIO_PERCENTAGE_DIFF() { return 0.3 }
 
@@ -19,7 +18,7 @@ class ProcessedImageManager {
     return new Promise(async (resolve, reject) => {
       GeneralHelpers.localMkdirp(this.TEMP_IMAGE_DIR)
 
-      const screenAspectRatio = UserStore.screenWidth() / (1.0 * UserStore.screenHeight());
+      const screenAspectRatio = DatabaseClient.read(CONSTANTS.screenWidth) / (1.0 * DatabaseClient.read(CONSTANTS.screenHeight));
       let dimensions;
 
       try {
@@ -42,12 +41,12 @@ class ProcessedImageManager {
       if (Math.abs((imageAspectRatio - screenAspectRatio) / screenAspectRatio) < this.ASPECT_RATIO_PERCENTAGE_DIFF) {
         const outputPath = this.processedImagePath(path.basename(localImagePath));
         jimp.read(localImagePath).then(function (image) {
-          image.cover(UserStore.screenWidth(), UserStore.screenHeight());
+          image.cover(DatabaseClient.read(CONSTANTS.screenWidth), DatabaseClient.read(CONSTANTS.screenHeight));
           image.write(outputPath, () => {
             resolve(true);
           })
         }).catch(function (err) {
-          logger.info(err)
+          Logger.info(err)
           resolve(false);
         });
       } else {
@@ -58,12 +57,9 @@ class ProcessedImageManager {
   }
 
   static moveProcessedImagesToFinalDir() {
-    const homeDir = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE; // Works on all OS's
-    const fullProcessedImagePath = path.join(homeDir, 'Desktop', this.PROCESSED_IMAGE_DIR);
-    GeneralHelpers.mkdirp(fullProcessedImagePath);;
-    execSync(`rm -f ${fullProcessedImagePath}/*`);
-    execSync(`mv ${GeneralHelpers.localJoin(this.TEMP_IMAGE_DIR)}/* ${fullProcessedImagePath}`);
-    execSync(`rm -rf ${GeneralHelpers.localJoin(this.TEMP_IMAGE_DIR)}`);
+    const sourceDir = GeneralHelpers.localJoin(this.TEMP_IMAGE_DIR);
+    FinalImageDirManager.syncNewImages(sourceDir);
+    execSync(`rm -rf ${sourceDir}`);
   }
 
   static processedImagePath(imageName) {

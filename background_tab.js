@@ -2,7 +2,8 @@ const path = require('path');
 const { ipcRenderer } = require('electron')
 
 const WallpaperManager = require(`${__dirname}/src/wallpaper_manager.js`);
-const logger = require(`${__dirname}/src/logger.js`);
+const Logger = require(`${__dirname}/src/logger.js`);
+const _ = require('lodash');
 
 const jobQueue = [];
 const enqueueRefreshJob = (options = {}) => {
@@ -10,9 +11,12 @@ const enqueueRefreshJob = (options = {}) => {
 };
 
 ipcRenderer.on('sync-images', (event, options = {}) => {
-  enqueueRefreshJob(options);
+  enqueueRefreshJob(_.assign(options, {type: 'sync-images'}));
 })
 
+ipcRenderer.on('remove-old-dir', (event, options = {}) => {
+  enqueueRefreshJob(_.assign(options, {type: 'remove-old-dir'}));
+})
 
 const periodicRunDelay = 5 * 60 * 1000; // 5 minutes
 setInterval(() => {
@@ -26,10 +30,14 @@ setInterval(() => {
 
   try {
     isRunning = true;
-    WallpaperManager.refreshImages(jobOptions, () => {
-      isRunning = false;
-    });
+    if (jobOptions.type === 'sync-images') {
+      WallpaperManager.refreshImages(jobOptions, () => {
+        isRunning = false;
+      });
+    } else if (jobOptions.type === 'remove-old-dir') {
+      // Upcoming
+    }
   } catch(err) {
-    logger.error(err);
+    Logger.error(err);
   }
 }, 3000);

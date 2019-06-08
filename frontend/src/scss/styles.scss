@@ -3,7 +3,7 @@ $fa-font-path: "~font-awesome/fonts";
 @import '~font-awesome/scss/font-awesome';
 
 p {
-  margin-bottom: 0;
+  margin-bottom: 15px;
 }
 .body {
   padding-top: 20px;
@@ -26,13 +26,17 @@ p {
 .love {
   line-height: 45px;
 }
+.logo-color {
+  color: #2196F3;
+}
+
 .logo, .nav-item {
   display: inline-block;
   margin-right: 40px;
   margin-bottom: 0;
 }
 .logo {
-  color: #2196F3;
+  @extend .logo-color;
   font-size: 30px;
   margin-bottom: 0;
   margin-left: 25px;
@@ -76,6 +80,7 @@ p {
   display: inline-block;
   padding: 5px 30px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.39);
+  border: 0;
 }
 .button:hover {
   cursor: pointer;
@@ -84,15 +89,9 @@ p {
   background: #E91E63;
   color: white;
 }
-.follow-button::after {
-  content: "Follow"
-}
 .unfollow-button {
   background: #F5F5F5;
   color: #737373;
-}
-.unfollow-button::after {
-  content: "Unfollow"
 }
 .image-source-label {
   font-size: 12px;
@@ -112,4 +111,42 @@ p {
 .check {
   color: #00c853;
   margin-left: 5px;
+}
+.onboarding-container {
+  text-align: center;
+  padding: 30px;
+}
+.onboarding-big-txt {
+  font-size: 32px;
+  font-weight: 600;
+}
+.folder-selector-container {
+  width: 100%;
+  background: #f7f7f7;
+  overflow: auto;
+  border-radius: 3px;
+  border: 1px solid #d2d2d2;
+}
+.folder-selector-button {
+  float: right;
+  padding: 9px 20px;
+  background: #868686;
+  color: white;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.folder-selector-button:hover {
+  cursor: pointer;
+}
+.folder-text {
+  display: inline;
+  float: left;
+  margin: 0;
+  margin-top: 8px;
+  margin-left: 10px;
+  font-style: italic;
+  color: black;
+}
+.folder-text.folder-text-inactive {
+  color: gray;
 }

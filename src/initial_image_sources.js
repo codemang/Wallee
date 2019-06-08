@@ -5,7 +5,7 @@ module.exports =  [
     sourceLabel: 'r/EarthPorn',
     description: 'EarthPorn is your community of landscape photographers and those who appreciate the natural beauty of our home planet.',
     endpoint: 'https://www.reddit.com/r/EarthPorn.json',
-    isFollowing: true,
+    isFollowing: false,
   },
   {
     displayName: 'Space',
@@ -13,7 +13,7 @@ module.exports =  [
     sourceLabel: 'r/SpacePorn',
     description: 'SpacePorn is a subreddit devoted to high-quality images of space. As long as the focus of the image is of the stars or related to space in some way then it is allowed. This includes artwork as well as photography.',
     endpoint: 'https://www.reddit.com/r/spaceporn/.json',
-    isFollowing: true,
+    isFollowing: false,
   },
   {
     displayName: 'Mountains',
@@ -21,7 +21,7 @@ module.exports =  [
     sourceLabel: 'r/Mountains',
     description: 'A subreddit for discussing all things related to climbing, mountaineering, geology, geography, etc. Anything mountain related goes here.',
     endpoint: 'https://www.reddit.com/r/mountains.json',
-    isFollowing: true,
+    isFollowing: false,
   },
   {
     displayName: 'I Took A Picture',

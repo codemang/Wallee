@@ -10,7 +10,7 @@ const myFormat = printf(info => {
   return `${new Date()} ${info.level}: ${info.message}`;
 });
 
-const logger = createLogger({
+const Logger = createLogger({
   level: 'info',
   format: myFormat,
   transports: [
@@ -28,9 +28,9 @@ const logger = createLogger({
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 //
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(new transports.Console({
+  Logger.add(new transports.Console({
     format: myFormat
   }));
 }
 
-module.exports = logger;
+module.exports = Logger;
