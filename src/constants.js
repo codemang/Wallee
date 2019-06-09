@@ -26,6 +26,9 @@ class CONSTANTS {
   static get welcomeModalShown() {
     return 'welcomeModalShown';
   }
+  static get finalImagesParentDir() {
+    return 'finalImagesParentDir';
+  }
 }
 
 module.exports = CONSTANTS;

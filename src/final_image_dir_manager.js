@@ -9,7 +9,7 @@ class FinalImageDirManager {
 
   static updateFinalImageParentDir(newFinalImageParentDir) {
     if (this.finalImageParentDir() && execSync(`test -d ${this.finalImageDir()}`)) {
-      execSync(`rm -f ${this.finalImageDir()}`);
+      execSync(`rm -rf ${this.finalImageDir()}`);
     }
     DatabaseClient.set(CONSTANTS.finalImagesParentDir, newFinalImageParentDir);
 

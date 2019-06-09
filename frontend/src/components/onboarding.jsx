@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import FolderSelector from './folder_selector';
+import DesktopSettingsOverview from './desktop_settings_overview';
 import '../scss/styles';
 
 // https://github.com/electron/electron/issues/9920
@@ -38,12 +40,7 @@ class Onboarding extends Component {
     return (
       <div>
         <p class="onboarding-big-txt">Step #2</p>
-        <p>Configure your computer to use the photos as your background.</p>
-        <p>1. System Preferences -> Desktop and Screen Saver</p>
-        <p>2. Click the + icon in the bottom left corner</p>
-        <p>3. Find the folder you inputted in the previous step. Within that folder there is a new “Wallee-Images” folder. Hit the “Choose” button.</p>
-        <p>4. At the bottom, ensure the “Change picture” toggle button is enabled. Change the frequency at which the photos change if you desire.</p>
-        <button className="button follow-button" onClick={this.props.moveToStep.bind(this, 'complete')}>Continue</button>
+        <DesktopSettingsOverview continueCallback={this.props.moveToStep.bind(this, 'complete')}/>
       </div>
     );
   }
@@ -52,9 +49,7 @@ class Onboarding extends Component {
     return (
       <div>
         <p class="onboarding-big-txt">Step #1</p>
-        <p>Choose where you want the images stored.</p>
-        {this.renderFolderSelector()}
-        <button className="button follow-button" onClick={this.props.moveToStep.bind(this, '3')}>Continue</button>
+        <FolderSelector successCallback={this.props.moveToStep.bind(this, '3')}/>
       </div>
     );
   }

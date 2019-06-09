@@ -40,7 +40,6 @@ class ApiBackend {
 
     ipcMain.on('select-photo-dir', event => {
       const callback = (filenames) => {
-        FinalImageDirManaager.updateFinalImageParentDir(filenames[0]);
         event.sender.send('reply-select-photo-dir', filenames[0])
       };
 
@@ -49,6 +48,17 @@ class ApiBackend {
       }, callback);
     });
 
+    ipcMain.on('request-photo-dir', event => {
+      event.sender.send('reply-photo-dir', FinalImageDirManaager.finalImageParentDir());
+    });
+
+    ipcMain.on('update-photo-dir', (event, dir) => {
+      // Only update if the directory has changed.
+      if (dir !== FinalImageDirManaager.finalImageParentDir()) {
+        FinalImageDirManaager.updateFinalImageParentDir(dir);
+        BackgroundWorkerManager.syncImages({forceRun: true});
+      }
+    });
   }
 }
 
