@@ -7,6 +7,7 @@ const { ipcRenderer } = window.require('electron');
 class Onboarding extends Component {
   constructor(props) {
     super(props);
+    this.state = {};
   }
 
   selectFolder() {

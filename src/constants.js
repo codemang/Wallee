@@ -23,6 +23,9 @@ class CONSTANTS {
   static get lastRunTimestamp() {
     return 'lastRunTimestamp';
   }
+  static get welcomeModalShown() {
+    return 'welcomeModalShown';
+  }
 }
 
 module.exports = CONSTANTS;

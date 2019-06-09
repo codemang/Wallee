@@ -150,3 +150,26 @@ p {
 .folder-text.folder-text-inactive {
   color: gray;
 }
+
+.modal-outer-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 2;
+}
+.modal-inner-container {
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  left: 30%;
+  right: 30%;
+  background: white;
+  border-radius: 3px;
+}
+.centered-container {
+  text-align: center;
+  padding: 20px;
+}

@@ -12,29 +12,34 @@ class App extends Component {
     super(props);
 
     this.state = {
-      step: null,
+      onboardingStep: null,
     };
 
-    ipcRenderer.on('reply-onboarding-step', (event, onboardingStep) => {
-      this.setState({step: onboardingStep});
+    ipcRenderer.on('reply-initial-payload', (event, initialPayload) => {
+      this.setState(initialPayload);
     });
-    ipcRenderer.send('request-onboarding-step');
+    ipcRenderer.send('request-initial-payload');
   }
 
   moveToStep(step) {
     ipcRenderer.send('set-onboarding-step', step);
-    this.setState({step: step});
+    this.setState({onboardingStep: step});
+  }
+
+  acknowledgeWelcomeModal() {
+    ipcRenderer.send('acknowledge-welcome-modal');
+    this.setState({welcomeModalShown: true});
   }
 
   render() {
-    if (this.state.step === null) {
+    if (this.state.onboardingStep === null) {
       return null;
     }
 
     return (
       <div>
-        {this.state.step !== 'complete' && <Onboarding step={this.state.step} moveToStep={this.moveToStep.bind(this)} />}
-        {this.state.step === 'complete' && <Dashboard />}
+        {this.state.onboardingStep !== 'complete' && <Onboarding step={this.state.onboardingStep} moveToStep={this.moveToStep.bind(this)} />}
+        {this.state.onboardingStep === 'complete' && <Dashboard welcomeModalShown={this.state.welcomeModalShown} acknowledgeWelcomeModal={this.acknowledgeWelcomeModal.bind(this)}/>}
       </div>
     );
   }

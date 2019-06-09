@@ -27,6 +27,7 @@
     "package-win": "electron-packager . Wallee --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=packages --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Electron Tutorial App\"",
     "package-linux": "electron-packager . Wallee --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=packages",
     "dmg": "electron-installer-dmg packages/Wallee-darwin-x64/Wallee.app Wallee --overwrite --icon=assets/icons/mac/icon.png.icns",
-    "release_osx": "npm run clean && npm run package && npm run dmg"
+    "release_osx": "npm run clean && npm run package && npm run dmg",
+    "build_frontend": "cd frontend && npm run build"
   }
 }

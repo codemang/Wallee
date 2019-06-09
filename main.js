@@ -52,6 +52,7 @@ const initDatabaseOnDownload = () => {
     ImagePreferencesManager.initImagePreferences();
     DatabaseClient.set(CONSTANTS.onboardingStep, '1');
     DatabaseClient.set(CONSTANTS.databaseInitialized, true);
+    DatabaseClient.set(CONSTANTS.welcomeModalShown, false);
 
     // Screensize can only be accessed in the main thread, which is why we do
     // it here. It's used by the processedImageManager which executes in a

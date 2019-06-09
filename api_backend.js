@@ -13,8 +13,12 @@ class ApiBackend {
       event.sender.send('reply-image-sources', ImagePreferencesManager.imagePreferences())
     })
 
-    ipcMain.on('request-onboarding-step', (event, arg) => {
-      event.sender.send('reply-onboarding-step', DatabaseClient.read(CONSTANTS.onboardingStep))
+    ipcMain.on('request-initial-payload', (event, arg) => {
+      const initialPayload = {
+        onboardingStep: DatabaseClient.read(CONSTANTS.onboardingStep),
+        welcomeModalShown: DatabaseClient.read(CONSTANTS.welcomeModalShown),
+      };
+      event.sender.send('reply-initial-payload', initialPayload)
     })
 
     ipcMain.on('set-onboarding-step', (event, onboardingStep) => {
@@ -28,6 +32,10 @@ class ApiBackend {
       ImagePreferencesManager.toggleImagePreference(internalName);
       BackgroundWorkerManager.syncImages({forceRun: true});
       event.sender.send('reply-image-sources', ImagePreferencesManager.imagePreferences())
+    });
+
+    ipcMain.on('acknowledge-welcome-modal', (event, internalName) => {
+      DatabaseClient.set(CONSTANTS.welcomeModalShown, true);
     });
 
     ipcMain.on('select-photo-dir', event => {

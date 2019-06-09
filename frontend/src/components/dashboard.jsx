@@ -100,9 +100,23 @@ class Dashboard extends Component {
     );
   }
 
+  renderWelcomeModal() {
+    return (
+      <div className="modal-outer-container">
+        <div className="modal-inner-container centered-container">
+          <p class="onboarding-big-txt">Start Exploring!</p>
+          <p>Explore the categories on the left by clicking on them.</p>
+          <p>Once you find one you like, click the Follow button and those types of photos will be added to your background.</p>
+          <button className="button follow-button" onClick={this.props.acknowledgeWelcomeModal.bind(this)}>Let's Go!</button>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     return (
       <div>
+        {!this.props.welcomeModalShown && this.renderWelcomeModal()}
         <div class="top-bar">
           <div class="logo">Wallee</div>
           <div class="nav-item nav-item-selected">Images</div>
@@ -141,5 +155,10 @@ class Dashboard extends Component {
     );
   }
 }
+
+Dashboard.propTypes = {
+  welcomeModalShown: PropTypes.bool,
+  acknowledgeWelcomeModal: PropTypes.function,
+};
 
 export default Dashboard;
