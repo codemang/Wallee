@@ -142,19 +142,21 @@ class Dashboard extends Component {
           <div class="nav-item">Settings</div>
         </div>
         <div class="body">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-3 overflow-container">
-                <div class="image-source-list">
-                  <div class="image-source-label">FOLLOWING</div>
-                  {this.renderImageSourceButtons({ isFollowing: true })}
-                </div>
-                <div class="image-source-list">
-                  <div class="image-source-label">EXPLORE</div>
-                  {this.renderImageSourceButtons({ isFollowing: false })}
-                </div>
+          <div className="image-source-selector-pane">
+            <div class="overflow-container">
+              <div class="image-source-list">
+                <div class="image-source-label">FOLLOWING</div>
+                {this.renderImageSourceButtons({ isFollowing: true })}
               </div>
-              <div class="col-sm-6 overflow-container">
+              <div class="image-source-list">
+                <div class="image-source-label">EXPLORE</div>
+                {this.renderImageSourceButtons({ isFollowing: false })}
+              </div>
+            </div>
+          </div>
+          <div class="container-fluid image-source-overview">
+            <div class="row">
+              <div class="col-sm-9 overflow-container">
                 {this.selectedImageSource() && this.renderPreviewImages()}
                 {!this.selectedImageSource() && this.renderAppIntro()}
               </div>
