@@ -15,11 +15,18 @@ class Dashboard extends Component {
     };
     ipcRenderer.on('reply-image-sources', (event, imageSources) => {
       this.setState({ imageSources });
+      const followingImage = _.find(imageSources, imageSource => {
+        return imageSource.isFollowing === true;
+      });
+      // Always have an image source selected. If the user is following any
+      // image source, use the first from that list. If not, use the first from
+      // all image sources.
+      this.setActiveImageSourceInternalName((followingImage || imageSources[0]).internalName);
     });
     ipcRenderer.send('request-image-sources');
   }
 
-  imageSourceClicked(internalName) {
+  setActiveImageSourceInternalName(internalName) {
     this.setState(
       Object.assign(this.state, {
         activeImageSourceInternalName: internalName,
@@ -38,7 +45,7 @@ class Dashboard extends Component {
           <ImageSource
             displayName={imageSource.displayName}
             internalName={imageSource.internalName}
-            clickCallback={this.imageSourceClicked.bind(this)}
+            clickCallback={this.setActiveImageSourceInternalName.bind(this)}
             isActive={
               this.state.activeImageSourceInternalName ==
               imageSource.internalName
