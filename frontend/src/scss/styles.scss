@@ -62,8 +62,11 @@ p {
   font-size: 24px;
   margin-bottom: 5px;
 }
-.image-source-button:hover {
+.image-source-clickable:hover {
   cursor: pointer;
+}
+.image-source-non-clickable {
+  color: grey;
 }
 .image-source-active {
   font-weight: 700;

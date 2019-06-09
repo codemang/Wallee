@@ -8,10 +8,11 @@ const ImageSource = ({
   isFollowing,
   isActive,
   clickCallback,
+  canBeClicked,
 }) => (
   <div className="image-source-container">
     <div
-      className={`image-source-button ${isActive ? 'image-source-active' : ''}`}
+      className={`image-source-button ${isActive ? 'image-source-active' : ''} ${canBeClicked ? 'image-source-clickable' : 'image-source-non-clickable'}`}
       onClick={clickCallback.bind(this, internalName)}
     >
       {displayName}
@@ -26,6 +27,11 @@ ImageSource.propTypes = {
   isFollowing: PropTypes.boolean,
   isActive: PropTypes.boolean,
   clickCallback: PropTypes.func,
+  canBeClicked: PropTypes.boolean,
 };
+
+ImageSource.defaultProps = {
+  canBeClicked: true,
+}
 
 export default ImageSource;

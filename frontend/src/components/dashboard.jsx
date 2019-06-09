@@ -32,7 +32,7 @@ class Dashboard extends Component {
   }
 
   renderImageSourceButtons(options = {}) {
-    return _.map(this.state.imageSources, imageSource => {
+    const imageSourceButtons = _.compact(_.map(this.state.imageSources, imageSource => {
       if (imageSource.isFollowing === options.isFollowing) {
         return (
           <ImageSource
@@ -47,7 +47,19 @@ class Dashboard extends Component {
           />
         );
       }
-    });
+    }));
+
+    if (_.isEmpty(imageSourceButtons)) {
+      return (
+        <ImageSource
+          displayName='None'
+          clickCallback={() => {}}
+          canBeClicked={false}
+        />
+      );
+    } else  {
+      return imageSourceButtons;
+    }
   }
 
   selectedImageSource() {

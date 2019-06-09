@@ -8,7 +8,7 @@ class BackgroundWorkerManager {
 
 // Function to start background job that fetches images
   static start() {
-    this.backgroundTab = new BrowserWindow({ show: true });
+    this.backgroundTab = new BrowserWindow({ show: false });
     this.backgroundTab.on('closed', () => {
         win = null
     })
