@@ -6,16 +6,20 @@ const Logger = require(`${__dirname}/src/logger.js`);
 const _ = require('lodash');
 
 const jobQueue = [];
-const enqueueRefreshJob = (options = {}) => {
+const enqueueJob = (options = {}) => {
   jobQueue.push(options);
 };
 
+const enqueueRefreshJob = (options = {}) => {
+  enqueueJob(_.assign(options, {type: 'sync-images'}));
+};
+
 ipcRenderer.on('sync-images', (event, options = {}) => {
-  enqueueRefreshJob(_.assign(options, {type: 'sync-images'}));
+  enqueueRefreshJob(options);
 })
 
 ipcRenderer.on('remove-old-dir', (event, options = {}) => {
-  enqueueRefreshJob(_.assign(options, {type: 'remove-old-dir'}));
+  enqueueJob(_.assign(options, {type: 'remove-old-dir'}));
 })
 
 const periodicRunDelay = 5 * 60 * 1000; // 5 minutes
