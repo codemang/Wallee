@@ -28,12 +28,25 @@ setInterval(() => {
 }, periodicRunDelay);
 
 let isRunning = false;
+let lastJobStartTime;
+var maxJobExecutionTime = 10 * 60 * 1000; // Ten minutes
+
 setInterval(() => {
-  if (isRunning || jobQueue.length === 0) { return; }
+  Logger.info("Is running: "+isRunning);
+  if (jobQueue.length === 0) { return; }
+
+  if (isRunning && lastJobStartTime && (Date.now() - lastJobStartTime) > maxJobExecutionTime) {
+    console.log("Detected lost job. Pruning");
+  } else if (isRunning) {
+    console.log("Job already running. Noop-ing");
+    return;
+  }
+
   jobOptions = jobQueue.shift()
 
   try {
     isRunning = true;
+    lastJobStartTime = Date.now()
     if (jobOptions.type === 'sync-images') {
       WallpaperManager.refreshImages(jobOptions, () => {
         isRunning = false;
