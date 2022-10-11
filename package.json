@@ -18,7 +18,7 @@
   "devDependencies": {
     "electron": "^1.8.8",
     "electron-installer-dmg": "^2.0.0",
-    "electron-packager": "^12.1.0"
+    "electron-packager": "^16.0.0"
   },
   "scripts": {
     "start": "electron .",
